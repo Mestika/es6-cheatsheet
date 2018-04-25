@@ -199,6 +199,146 @@ const squares = arr.map(x => x * x); // Arrow Function for terser implementation
 > **Best Practice**: Use **Arrow Functions** in place of function expressions
 when possible.
 
+### ES5 => ES6 Examples
+
+**Basic Syntax with Multiple Parameters**  
+(param1, param2, paramN) => expression
+
+```
+// ES5
+var multiplyES5 = function(x, y) {
+  return x * y;
+};
+
+// ES6
+const multiplyES6 = (x, y) => { return x * y };
+
+// Curly brackets aren’t required if only one expression is present
+const multiplyES6 = (x, y) => x * y;
+```
+
+**Basic Syntax with One Parameter**
+
+```
+//ES5
+var phraseSplitterEs5 = function phraseSplitter(phrase) {
+  return phrase.split(' ');
+};
+
+//ES6
+const phraseSplitterEs6 = phrase => phrase.split(" ");
+
+console.log(phraseSplitterEs6("ES6 Awesomeness"));  // ["ES6", "Awesomeness"]
+```
+
+**No Parameters**  
+Parentheses are required when no parameters are present.
+
+```
+//ES5
+var docLogEs5 = function docLog() {
+    console.log(document);
+};
+
+//ES6
+var docLogEs6 = () => { console.log(document); };
+docLogEs6(); // #document... <html> ….
+```
+
+**Object Literal Syntax**  
+Arrow functions, like function expressions, can be used to return an object literal expression. The only caveat is that the body needs to be wrapped in parentheses, in order to distinguish between a block and an object (both of which use curly brackets).
+
+```
+//ES5
+var setNameIdsEs5 = function setNameIds(id, name) {
+  return {
+    id: id,
+    name: name
+  };
+};
+
+// ES6
+var setNameIdsEs6 = (id, name) => ({ id: id, name: name });
+console.log(setNameIdsEs6 (4, "Kyle"));   // Object {id: 4, name: "Kyle"}
+```
+
+### Use Cases for Arrow Functions
+
+**Example #01**
+
+```
+const smartPhones = [
+  { name:'iphone', price:649 },
+  { name:'Galaxy S6', price:576 },
+  { name:'Galaxy Note 5', price:489 }
+];
+
+// ES5
+var prices = smartPhones.map(function(smartPhone) {
+  return smartPhone.price;
+});
+
+console.log(prices); // [649, 576, 489]
+
+// ES6
+const prices = smartPhones.map(smartPhone => smartPhone.price);
+console.log(prices); // [649, 576, 489]
+```
+
+**Example #02**
+
+```
+const array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15];
+
+// ES5
+var divisibleByThrreeES5 = array.filter(function (v){
+  return v % 3 === 0;
+});
+
+// ES6
+const divisibleByThrreeES6 = array.filter(v => v % 3 === 0);
+
+console.log(divisibleByThrreeES6); // [3, 6, 9, 12, 15]
+```
+
+###Promises and Callbacks
+
+```
+// ES5
+aAsync().then(function() {
+  returnbAsync();
+}).then(function() {
+  returncAsync();
+}).done(function() {
+  finish();
+});
+
+// ES6
+aAsync().then(() => bAsync()).then(() => cAsync()).done(() => finish);
+```
+
+**promise**
+
+```
+// ES5
+API.prototype.get = function(resource) {
+  var self = this;
+  return new Promise(function(resolve, reject) {
+    http.get(self.uri + resource, function(data) {
+      resolve(data);
+    });
+  });
+};
+
+// ES6
+API.prototype.get = function(resource) {
+  return new Promise((resolve, reject) => {
+    http.get(this.uri + resource, function(data) {
+      resolve(data);
+    });
+  });
+};
+```
 <sup>[(back to table of contents)](#table-of-contents)</sup>
 
 ## Strings
