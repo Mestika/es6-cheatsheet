@@ -201,7 +201,7 @@ when possible.
 
 ### ES5 => ES6 Examples
 
-**Basic Syntax with Multiple Parameters**  
+**Basic Syntax with Multiple Parameters**
 (param1, param2, paramN) => expression
 
 ```
@@ -231,7 +231,7 @@ const phraseSplitterEs6 = phrase => phrase.split(" ");
 console.log(phraseSplitterEs6("ES6 Awesomeness"));  // ["ES6", "Awesomeness"]
 ```
 
-**No Parameters**  
+**No Parameters**
 Parentheses are required when no parameters are present.
 
 ```
@@ -245,7 +245,7 @@ var docLogEs6 = () => { console.log(document); };
 docLogEs6(); // #document... <html> ….
 ```
 
-**Object Literal Syntax**  
+**Object Literal Syntax**
 Arrow functions, like function expressions, can be used to return an object literal expression. The only caveat is that the body needs to be wrapped in parentheses, in order to distinguish between a block and an object (both of which use curly brackets).
 
 ```
@@ -686,6 +686,147 @@ addTwoNumbers(2, 4); // 6
 addTwoNumbers(2); // 2
 addTwoNumbers(); // 0
 ```
+
+####Real-World example
+
+**ES5**
+```
+// Without default parameters it looks quite bloated and unnecessary large.
+function createElement (tag, config) {
+  tag = tag || 'div';
+  config = config || {};
+
+  const element = document.createElement(tag);
+  const content = config.content || 'Very default';
+  const text = document.createTextNode(content);
+  let classNames = config.classNames;
+
+  if (classNames === undefined) {
+    classNames = ['module-text', 'default'];
+  }
+
+  element.classList.add(...classNames);
+  element.appendChild(text);
+
+  return element;
+}
+```
+
+**ES6**
+
+```
+// Default all the things
+function createElement (tag = 'div', {
+  content = 'Very default',
+  classNames = ['module-text', 'special']
+} = {}) {
+  const element = document.createElement(tag);
+  const text = document.createTextNode(content);
+
+  element.classList.add(...classNames);
+  element.appendChild(text);
+
+  return element;
+}
+```
+
+**Explain part of ES6**
+
+```
+// What exactly happens here?
+function createElement ({
+  content = 'Very default',
+  classNames = ['module-text', 'special']
+} = {}) {
+  // function body
+}
+```
+We not only declare a default object parameter, but also default object properties. This makes it more obvious what the default configuration is supposed to look like, rather than only declaring a default object (e.g. config = {}) and later setting default properties. It might take some additional time to get used to it, but in the end it improves your workflow.
+
+Of course, we could still argue with larger configurations that it might create more overhead and it’d be simpler to just keep the default handling inside of the function body.
+
+####ES6 Property Shorthands
+If a method accepts large configuration objects as an argument, your code can become quite large. It’s common to prepare some variables and add them to said object. Property shorthands are syntactic sugar to make this step shorter and more readable:
+
+```
+const a = 'foo', b = 42, c = function () {};
+
+// Previously we would use these constants like this.
+const alphabet = {
+  a: a,
+  b: b,
+  c: c
+};
+
+// But with the new shorthand we can actually do this now,
+// which is equivalent to the above.
+const alphabet = { a, b, c };
+```
+
+####Shorten Your API
+Okay, back to another, more common example. The following function takes some data, mutates it and calls another method:
+
+```
+function updateSomething (data = {}) {
+  const target = data.target;
+  const veryLongProperty = data.veryLongProperty;
+  let willChange = data.willChange;
+
+  if (willChange === 'unwantedValue') {
+    willChange = 'wayBetter';
+  }
+
+  // Do more.
+
+  useDataSomewhereElse({
+    target: target,
+    property: veryLongProperty,
+    willChange: willChange,
+    // .. more
+  });
+}
+```
+
+It often happens that we name variables and object property names the same. Using the property shorthand, combined with destructuring, we actually can shorten our code quite a bit:
+
+```
+function updateSomething (data = {}) {
+  // Here we use destructuring to store the constants from the data object.
+  const { target, veryLongProperty: property } = data;
+  let { willChange } = data;
+
+  if (willChange === 'unwantedValue') {
+    willChange = 'wayBetter';
+  }
+
+  // Do more.
+
+  useDataSomewhereElse({ target, property, willChange });
+}
+```
+
+Again, this might take a while to get used to. In the end, it’s one of those new features in JavaScript which helped me write code faster and work with cleaner function bodies.
+
+But wait, there’s more! Property shorthands can also be applied to method definitions inside an object:
+
+```
+// Instead of writing the function keyword everytime,
+const module = {
+  foo: 42,
+  bar: function (value) {
+    // do something
+  }
+};
+
+// we can just omit it and have shorter declarations
+const module = {
+  foo: 42,
+  bar (value) {
+    // do something
+  }
+};
+```
+
 
 ### Rest Parameters
 
@@ -1283,10 +1424,10 @@ class Employee {
 
     get name() {
       if(this._name) {
-        return 'Mr. ' + this._name.toUpperCase();  
+        return 'Mr. ' + this._name.toUpperCase();
       } else {
         return undefined;
-      }  
+      }
     }
 
     set name(newName) {
@@ -1309,7 +1450,7 @@ if (emp.name) {
 
 // uses the setter in the background
 emp.name = "Bond 007";
-console.log(emp.name);  // Mr. BOND 007  
+console.log(emp.name);  // Mr. BOND 007
 ```
 
 Latest browsers are also supporting getter/setter functions in Objects and we can use them for computed properties, adding listeners and preprocessing before setting/getting:
