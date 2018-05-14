@@ -456,12 +456,13 @@ let text = `The time and date is ${today.toLocaleString()}`;
 
 <sup>[(back to table of contents)](#table-of-contents)</sup>
 
-## Destructuring
+## Destructuring (Destructuring Assignment)
 
 Destructuring allows us to extract values from arrays and objects (even deeply
 nested) and store them in variables with a more convenient syntax.
 
 ### Destructuring Arrays
+**ES5**
 
 ```javascript
 var arr = [1, 2, 3, 4];
@@ -471,6 +472,8 @@ var c = arr[2];
 var d = arr[3];
 ```
 
+**ES6**
+
 ```javascript
 let [a, b, c, d] = [1, 2, 3, 4];
 
@@ -478,7 +481,33 @@ console.log(a); // 1
 console.log(b); // 2
 ```
 
+**ES6 destructuring permits a simpler and less error-prone alternative:**
+
+```javascript
+const [one, two, three] = arr;
+
+// one = '1', two = '2', three = '3'
+```
+
+**You can ignore certain values, e.g.**
+
+```javascript
+const [one, , three] = arr;
+
+// one = 1, three = 3
+```
+
+**or use the rest operator (...) to extract remaining elements:**
+
+```javascript
+const [one, ...two] = arr;
+
+// one = 1, two = [2, 3]
+```
+
 ### Destructuring Objects
+
+**ES5**
 
 ```javascript
 var luke = { occupation: 'jedi', father: 'anakin' };
@@ -486,12 +515,229 @@ var occupation = luke.occupation; // 'jedi'
 var father = luke.father; // 'anakin'
 ```
 
+**ES6**
+
 ```javascript
 let luke = { occupation: 'jedi', father: 'anakin' };
 let {occupation, father} = luke;
 
 console.log(occupation); // 'jedi'
 console.log(father); // 'anakin'
+```
+
+**More complex nested objects can also be referenced, e.g.**
+
+```
+const meta = {
+  title: 'Destructuring Assignment',
+  authors: [
+    {
+      firstname: 'Craig',
+      lastname: 'Buckler'
+    }
+  ],
+  publisher: {
+    name: 'SitePoint',
+    url: 'http://www.sitepoint.com/'
+  }
+};
+
+const {
+    title: doc,
+    authors: [{ firstname: name }],
+    publisher: { url: web }
+  } = meta;
+
+/*
+  doc   = 'Destructuring Assignment'
+  name  = 'Craig'
+  web   = 'http://www.sitepoint.com/'
+*/
+```
+
+This appears a little complicated but remember that in all destructuring assignments:
+
+* the left-hand side of the assignment is the **destructuring target** — the pattern which defines the variables being assigned
+* the right-hand side of the assignment is the **destructuring source — the array or object which holds the data being extracted.
+
+There are a number of other caveats. First, you can’t start a statement with a curly brace, because it looks like a code block, e.g.
+
+```
+// THIS FAILS
+{ a, b, c } = myObject;
+``
+
+You must either declare the variables, e.g.
+
+// THIS WORKS
+const { a, b, c } = myObject;
+
+// or use parentheses if variables are already declared, e.g.
+// THIS WORKS
+({ a, b, c } = myObject);
+```
+
+*You should also be wary of mixing declared and undeclared variables, e.g.*
+
+```
+// THIS FAILS
+let a;
+let { a, b, c } = myObject;
+
+// THIS WORKS
+let a, b, c;
+({ a, b, c } = myObject);
+```
+
+####Use cases for deconstructing
+#####Easier Declaration
+Variables can be declared without explicitly defining each value, e.g.
+```
+// ES5
+var a = 'one', b = 'two', c = 'three';
+
+// ES6
+const [a, b, c] = ['one', 'two', 'three'];
+```
+
+Admittedly, the destructured version is longer. It’s a little easier to read, although that may not be the case with more items.
+
+#####Variable Value Swapping
+Swapping values in ES5 requires a temporary third variable, but it’s far simpler with destructuring:
+
+```
+var a = 1, b = 2;
+
+// ES5 swap
+var temp = a;
+a = b;
+b = temp;
+
+// a = 2, b = 1
+
+// ES6 swap back
+[a, b] = [b, a];
+
+// a = 1, b = 2
+```
+You’re not limited to two variables; any number of items can be rearranged, e.g.
+
+```
+// rotate left
+[b, c, d, e, a] = [a, b, c, d, e];
+```
+#####Default Function Parameters
+Presume we had a function to output our `meta` object:
+
+```
+var meta = {
+  title: 'Destructuring Assignment',
+  authors: [
+    {
+      firstname: 'Craig',
+      lastname: 'Buckler'
+    }
+  ],
+  publisher: {
+    name: 'SitePoint',
+    url: 'http://www.sitepoint.com/'
+  }
+};
+
+prettyPrint(meta);
+```
+In ES5, it’s necessary to parse this object to ensure appropriate defaults are available, e.g.
+```
+// ES5 default values
+function prettyPrint(param) {
+  param = param || {};
+  var
+    pubTitle = param.title || 'No title',
+    pubName = (param.publisher &amp;&amp; param.publisher.name) || 'No publisher';
+
+  return pubTitle + ', ' + pubName;
+}
+```
+
+In ES6 we can assign a default value to any parameter, e.g.
+
+```
+// ES6 default value
+function prettyPrint(param = {}) {
+```
+
+but we can then use destructuring to extract values and assign defaults where necessary:
+
+```
+// ES6 destructured default value
+function prettyPrint(
+  {
+    title: pubTitle = 'No title',
+    publisher: { name: pubName = 'No publisher' }
+  } = {}
+) {
+  return pubTitle + ', ' + pubName;
+}
+```
+
+#####Returning Multiple Values from a Function
+Functions can only return one value, but that can be a complex object or multi-dimensional array. Destructuring assignment makes this more practical, e.g.
+
+```
+function f() {
+  return [1, 2, 3];
+}
+
+const [a, b, c] = f();
+
+// a = 1, b = 2, c = 3
+```
+
+#####For-of Iteration
+Consider an array of book information:
+
+```
+const books = [
+  {
+    title: 'Full Stack JavaScript',
+    author: 'Colin Ihrig and Adam Bretz',
+    url: 'http://www.sitepoint.com/store/full-stack-javascript-development-mean/'
+  },
+  {
+    title: 'JavaScript: Novice to Ninja',
+    author: 'Darren Jones',
+    url: 'http://www.sitepoint.com/store/leaern-javascript-novice-to-ninja/'
+  },
+  {
+    title: 'Jump Start CSS',
+    author: 'Louis Lazaris',
+    url: 'http://www.sitepoint.com/store/jump-start-css/'
+  },
+];
+```
+
+The ES6 for-of is similar to for-in, except that it extracts each value rather than the index/key, e.g.
+
+```
+for (const b of books) {
+  console.log(b.title + ' by ' + b.author + ': ' + b.url);
+}
+```
+Destructuring assignment provides further enhancements, e.g.
+
+```
+for (const {title, author, url} of books) {
+  console.log(title + ' by ' + author + ': ' + url);
+}
+```
+
+#####Regular Expression Handling
+Regular expressions functions such as match return an array of matched items, which can form the source of a destructuring assignment:
+
+```
+const [a, b, c, d] = 'one two three'.match(/\w+/g);
+
+// a = 'one', b = 'two', c = 'three', d = undefined
 ```
 
 <sup>[(back to table of contents)](#table-of-contents)</sup>
